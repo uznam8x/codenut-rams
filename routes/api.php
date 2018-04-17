@@ -13,8 +13,17 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::middleware( 'auth:api' )->get( '/user', function(Request $request) {
     return $request->user();
-});
+} );
 
-Route::get('/user', 'UserController@read');
+
+Route::get( '/user', 'UserController@read' );
+Route::post( '/user', 'UserController@create' );
+
+Route::group( ['middleware' => 'RESTful'], function() {
+    Route::get( '/store', 'StoreController@read' );
+    Route::get( '/store/{name}', 'StoreController@read' );
+    Route::get( '/store/{name}/view', 'StoreController@read' );
+    Route::post( '/store/register', 'StoreController@register' );
+} );
