@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Mediator {
+class UserController extends Agent {
     protected $table = 'cr_users';
 
     public function create(Request $request) {

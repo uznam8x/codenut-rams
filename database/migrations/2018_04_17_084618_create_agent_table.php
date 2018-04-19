@@ -4,18 +4,18 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateStoreTable extends Migration
+class CreateAgentTable extends Migration
 {
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('cr_store', function (Blueprint $table) {
+    public function up() {
+        Schema::create('cr_agent', function (Blueprint $table) {
             $table->increments('xid');
-            $table->string('name')->unique();
+            $table->string('store')->unique();
+            $table->mediumText('addon');
             $table->timestamps();
         });
     }
