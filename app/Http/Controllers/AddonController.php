@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Addon;
+use App\Helper\Announcement;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +34,11 @@ class AddonController extends Controller {
 
     public function create(Request $request, $name) {
         $result = $this->validator( $request, $name );
+
         if ($result->code === 200) {
+            $param = $request->all();
+            unset( $param['store'] );
+
             $addons = json_decode( $result->data );
             $index = array_search( $name, $addons );
             if ($index === false) {
@@ -41,13 +47,15 @@ class AddonController extends Controller {
             $result->query->update( ['addon' => json_encode( $addons, JSON_UNESCAPED_UNICODE )] );
 
             // create addon field
-            $instance = "App\Addon\\" . $name . "\Controller";
-            $controller = new $instance();
-            $feedback = (object) $controller->register( (object) array('table' => 'cr_store_' . $result->store) );
-            if ($feedback->code == 200) {
-                return $this->success();
+            $uniq = uniqid();
+            Announcement::set( $uniq, array('addon' => $name, 'store' => $result->store, 'param' => $param, 'error' => array()) );
+            event( 'addon.activate', $uniq );
+
+            $data = Announcement::get( $uniq );
+            if(count( $data->error )){
+                return $this->error($data->error);
             } else {
-                return $this->error( $feedback->message );
+                return $this->success();
             }
         } else {
             return $this->error( $result->message );
@@ -57,13 +65,27 @@ class AddonController extends Controller {
     public function delete(Request $request, $name) {
         $result = $this->validator( $request, $name );
         if ($result->code === 200) {
+            $param = $request->all();
+            unset( $param['store'] );
+
             $addons = json_decode( $result->data );
             $index = array_search( $name, $addons );
             if ($index !== false) {
                 array_splice( $addons, $index, 1 );
             }
             $result->query->update( ['addon' => json_encode( $addons, JSON_UNESCAPED_UNICODE )] );
-            return $this->success();
+
+            // create addon field
+            $uniq = uniqid();
+            Announcement::set( $uniq, array('addon' => $name, 'store' => $result->store, 'param' => $param, 'error' => array()) );
+            event( 'addon.deactivate', $uniq );
+
+            $data = Announcement::get( $uniq );
+            if(count( $data->error )){
+                return $this->error($data->error);
+            } else {
+                return $this->success();
+            }
         } else {
             return $this->error( $result->message );
         }
@@ -72,9 +94,7 @@ class AddonController extends Controller {
     public function read(Request $request, $name = null) {
         if ($name) {
             try {
-                $controller = str_replace( '/', '\\', '/App/Addon/' . $name . '/Controller' );
-                $instance = new $controller();
-                return $this->success( $instance->info() );
+                return $this->success( Addon::get( $name )->info );
             } catch (Exception $e) {
                 return $this->error( array('message' => 'error addon') );
             }

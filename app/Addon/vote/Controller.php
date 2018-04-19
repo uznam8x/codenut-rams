@@ -6,6 +6,7 @@ use App\Events\AddonEvent;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Event;
 use Mockery\Exception;
 
 class Controller {
@@ -13,6 +14,11 @@ class Controller {
 
     public function __construct() {
 
+    }
+    public function initialize(){
+        Event::listen('store.update', function($event){
+            //echo 'asdf';
+        } );
     }
 
     public function insert($param){
@@ -44,6 +50,9 @@ class Controller {
     }*/
 
 
+    public function info(){
+        return array('name' => 'vote', 'description' => 'vote count');
+    }
     public function read() {
         return array('name' => 'vote', 'description' => 'store add vote');
     }

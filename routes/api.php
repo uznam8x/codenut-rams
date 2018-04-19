@@ -27,14 +27,13 @@ Route::group( ['middleware' => 'mime:json'], function() {
     Route::get( '/store', 'StoreController@read' );
     Route::get( '/store/{name}', 'StoreController@read' );
     Route::get( '/store/{name}/{xid}', 'StoreController@view' );
-    Route::post( '/store/{name}', 'StoreController@create' );
 
+    Route::post( '/store/{name}/{xid}', 'StoreController@update' );
+    Route::post( '/store/{name}', 'StoreController@create' );
 
     Route::get( '/addon', 'AddonController@read' );
     Route::get( '/addon/{name}', 'AddonController@read' );
     Route::post( '/addon/{name}', 'AddonController@create' );
     Route::delete( '/addon/{name}', 'AddonController@delete' );
 
-    //Route::post( '/addon/{name}', 'AddonController@activate' );
-    //Route::delete( '/addon/{name}', 'AddonController@deactivate' );
 } );
