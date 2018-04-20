@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\AddonEvent;
 use App\Helper\Action;
 use App\Helper\Addon;
-use App\Helper\Announcement;
 use App\Helper\Data;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;

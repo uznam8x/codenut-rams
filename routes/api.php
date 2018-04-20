@@ -18,23 +18,46 @@ Route::middleware( 'auth:api' )->get( '/user', function(Request $request) {
 } );
 */
 Route::group( ['middleware' => 'mime:json'], function() {
-    Route::get( '/user', 'UserController@read' );
     Route::post( '/user', 'UserController@create' );
+    Route::post( '/login', 'UserController@login' );
+    Route::post( '/logout', 'UserController@logout' );
 
-    Route::get( '/agent', 'AgentController@read' );
-    Route::post( '/agent', 'AgentController@create' );
+    Route::group( ['middleware' => 'authorize:super'], function() {
+        Route::get( '/store', 'StoreController@read' );
+        Route::get( '/store/{name}', 'StoreController@read' );
+    } );
+    Route::group( ['middleware' => 'authorize:staff'], function() {
+    } );
+    Route::group( ['middleware' => 'authorize:member'], function() {
+        Route::get( '/user', 'UserController@read' );
+    } );
 
-    Route::get( '/store', 'StoreController@read' );
-    Route::get( '/store/{name}', 'StoreController@read' );
-    Route::post( '/store/{name}', 'StoreController@create' );
+    /*
 
-    Route::get( '/store/{name}/{xid}', 'StoreController@view' );
-    Route::patch( '/store/{name}/{xid}', 'StoreController@update' );
+        Route::get( '/addon', 'AddonController@read' );
+        Route::get( '/addon/{name}', 'AddonController@read' );
 
-    Route::get( '/addon', 'AddonController@read' );
-    Route::get( '/addon/{name}', 'AddonController@read' );
-    Route::post( '/addon/{name}', 'AddonController@create' );
-    Route::delete( '/addon/{name}', 'AddonController@delete' );
+        Route::group(['middleware' => 'auth:super'], function () {
+            Route::get( '/user', 'UserController@read' );
 
+            Route::get( '/agent', 'AgentController@read' );
+            Route::post( '/agent', 'AgentController@create' );
+
+            Route::get( '/store/{name}/{xid}', 'StoreController@view' );
+            Route::post( '/store/{name}', 'StoreController@create' );
+            Route::patch( '/store/{name}/{xid}', 'StoreController@update' );
+            Route::post( '/addon/{name}', 'AddonController@create' );
+            Route::delete( '/addon/{name}', 'AddonController@delete' );
+
+            Addon::routes();
+        });
+
+        Route::group(['middleware' => 'auth:staff'], function () {
+
+        });
+
+        Route::group(['middleware' => 'auth:member'], function () {
+
+        });*/
     Addon::routes();
 } );

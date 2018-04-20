@@ -16,6 +16,7 @@ class Mime {
 
         $type = array('json' => 'application/json', 'xml' => 'application/xml', 'text' => 'text/plain',);
         $contentType = $type['json'];
+
         foreach ($args as $param) {
             $contentType = $type[$param];
         }
