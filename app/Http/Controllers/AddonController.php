@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Action;
 use App\Helper\Addon;
 use App\Helper\Announcement;
+use App\Helper\Data;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,15 +50,11 @@ class AddonController extends Controller {
 
             // create addon field
             $uniq = uniqid();
-            Announcement::set( $uniq, array('addon' => $name, 'store' => $result->store, 'param' => $param, 'error' => array()) );
-            event( 'addon.activate', $uniq );
+            Data::set( $uniq, array('store' => $result->store, 'param' => $param, 'error' => array()) );
+            Action::dispatch( Addon::get( $name )->instance.'::addon.activate', $uniq );
 
-            $data = Announcement::get( $uniq );
-            if(count( $data->error )){
-                return $this->error($data->error);
-            } else {
-                return $this->success();
-            }
+
+            return $this->success();
         } else {
             return $this->error( $result->message );
         }
@@ -75,17 +73,12 @@ class AddonController extends Controller {
             }
             $result->query->update( ['addon' => json_encode( $addons, JSON_UNESCAPED_UNICODE )] );
 
-            // create addon field
+            // remove addon field
             $uniq = uniqid();
-            Announcement::set( $uniq, array('addon' => $name, 'store' => $result->store, 'param' => $param, 'error' => array()) );
-            event( 'addon.deactivate', $uniq );
+            Data::set( $uniq, array('store' => $result->store, 'param' => $param, 'error' => array()) );
+            Action::dispatch( Addon::get( $name )->instance.'::addon.deactivate', $uniq );
 
-            $data = Announcement::get( $uniq );
-            if(count( $data->error )){
-                return $this->error($data->error);
-            } else {
-                return $this->success();
-            }
+            return $this->success();
         } else {
             return $this->error( $result->message );
         }

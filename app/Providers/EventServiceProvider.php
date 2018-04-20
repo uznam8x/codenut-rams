@@ -25,9 +25,5 @@ class EventServiceProvider extends ServiceProvider {
      */
     public function boot() {
         parent::boot();
-        foreach (glob( app_path( 'Addon' ) . '/*' ) as $path) {
-            $name = str_replace( app_path( 'Addon/' ), '', $path );;
-            //Event::listen('App\Events\AddonEvent', "App\Addon\\${name}\Controller");
-        }
     }
 }

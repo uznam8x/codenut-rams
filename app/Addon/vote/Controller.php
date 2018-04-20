@@ -15,20 +15,30 @@ class Controller {
     public function __construct() {
 
     }
-    public function initialize(){
-        Event::listen('store.update', function($event){
+
+    public function initialize() {
+        Event::listen( 'store.read', function($key) {
+            $this->read( $key );
+            //echo 'asdf';
+        } );
+        Event::listen( 'store.view', function($key) {
+            $this->view( $key );
+            //echo 'asdf';
+        } );
+        Event::listen( 'store.update', function($event) {
             //echo 'asdf';
         } );
     }
 
-    public function insert($param){
-        if(!Schema::hasColumn($param->table, $this->field)){
-            Schema::table($param->table, function(Blueprint $table) {
-                $table->integer($this->field)->default(0);
-            });
+    public function insert($param) {
+        if (!Schema::hasColumn( $param->table, $this->field )) {
+            Schema::table( $param->table, function(Blueprint $table) {
+                $table->integer( $this->field )->default( 0 );
+            } );
         }
         return $param;
     }
+
     /*
     private function insert($param) {
         if(!Schema::hasColumn($param->table, $this->field)){
@@ -49,11 +59,20 @@ class Controller {
         }
     }*/
 
+    public function read($key) {
+        echo 'vote.read';
+    }
 
-    public function info(){
+    public function view($key) {
+        echo 'vote.view';
+    }
+
+
+    public function info() {
         return array('name' => 'vote', 'description' => 'vote count');
     }
+    /*
     public function read() {
         return array('name' => 'vote', 'description' => 'store add vote');
-    }
+    }*/
 }
