@@ -9,6 +9,10 @@
 
 define('LARAVEL_START', microtime(true));
 
+/* Rename install.php */
+if(file_exists('install.php')){
+    rename('install.php', 'install');
+}
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader

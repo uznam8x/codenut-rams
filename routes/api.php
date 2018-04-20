@@ -27,9 +27,10 @@ Route::group( ['middleware' => 'mime:json'], function() {
         Route::get( '/store/{name}', 'StoreController@read' );
     } );
     Route::group( ['middleware' => 'authorize:staff'], function() {
+        Route::get( '/user', 'UserController@read' );
     } );
     Route::group( ['middleware' => 'authorize:member'], function() {
-        Route::get( '/user', 'UserController@read' );
+
     } );
 
     /*

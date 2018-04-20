@@ -15,19 +15,28 @@ class Authorize {
      * @param  \Closure $next
      * @return mixed
      */
-    public function handle($request, Closure $next, ...$permission) {
+    public function handle($request, Closure $next, ...$args) {
+
         $role = 'member';
-        foreach ($permission as $level) {
-            $role = $level;
+        foreach ($args as $arg) {
+            $role = $arg;
         }
+
+        $level = array('member' => 1, "staff" => 8, "super" => 10);
 
         $param = $request->input( 'token' );
         $validator = Validator::make( array('token' => $param), array('token' => 'required') );
         if ($validator->fails()) {
             return response()->json( ['code' => 500, 'data' => array('message' => $validator->errors())] );
         }
+
+
         try {
             $user = JWTAuth::toUser( $param );
+
+            if( $level[$user->role] < $level[$role] ){
+                return response()->json( ['code' => 403, 'data' => array('message' => 'access denied')] );
+            }
         } catch (Exception $e) {
             if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
                 return response()->json( ['code' => 500, 'data' => array('message' => 'Token is Invalid')] );

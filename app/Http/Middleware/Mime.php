@@ -14,8 +14,9 @@ class Mime {
      */
     public function handle($request, Closure $next, ...$args) {
 
-        $type = array('json' => 'application/json', 'xml' => 'application/xml', 'text' => 'text/plain',);
-        $contentType = $type['json'];
+
+        $type = array('json' => 'application/json', 'xml' => 'application/xml', 'text' => 'text/plain', 'html' => 'text/html');
+        $contentType = $type['html'];
 
         foreach ($args as $param) {
             $contentType = $type[$param];

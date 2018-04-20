@@ -16,9 +16,12 @@ class CreateUsersTable extends Migration
             $table->increments('xid');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('role')->default('member');
             $table->rememberToken();
             $table->timestamps();
         });
+
+
     }
 
     /**
@@ -26,8 +29,7 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('users');
     }
 }
