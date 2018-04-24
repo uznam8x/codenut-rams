@@ -22,7 +22,7 @@ class StoreController extends Controller {
 
     public function action($type, $name, $key) {
 
-        $result = DB::table( 'cr_agent' )->where( 'store', $name )->first();
+        $result = DB::table( 'cr_agent' )->where( 'name', $name )->first();
         if (count( $result )) {
 
             $addons = json_decode( $result->addon );
@@ -35,7 +35,19 @@ class StoreController extends Controller {
         }
     }
 
-    public function create(Request $request, $name) {
+    private function cleanParameter($table, $param) {
+        $arr = array();
+        $colums = Schema::getColumnListing( $table );
+
+        foreach ($colums as $key) {
+            if( isset($param[$key]) ){
+                $arr[$key] = $param[$key];
+            }
+        }
+        return $arr;
+    }
+
+    public function write(Request $request, $name) {
         $param = $request->all();
         $validator = Validator::make( $param, array('email' => 'required|string|email', 'subject' => 'required|string', 'description' => 'required|string') );
         if ($validator->fails()) {
@@ -43,8 +55,8 @@ class StoreController extends Controller {
         }
         $param['created_at'] = date( 'Y-m-d H:i:s' );
         $param['updated_at'] = date( 'Y-m-d H:i:s' );
-        DB::table( $this->prefix . $name )->insert( $param );
-        //$this->action( 'create', $name );
+        DB::table( $this->prefix . $name )->insert( $this->cleanParameter($this->prefix . $name, $param) );
+        //$this->action( 'store.create', $name );
         return $this->success();
     }
 
@@ -71,7 +83,8 @@ class StoreController extends Controller {
 
             return $this->success( $query->select( $select )->get() );
         } else {
-            return $this->error( array('name' => 'missing name') );
+            $result = DB::table( 'cr_agent' )->get();
+            return $this->success( $result );
         }
     }
 
@@ -105,13 +118,13 @@ class StoreController extends Controller {
             $uniq = uniqid();
             Data::set( $uniq, array('store' => $name, 'xid' => $xid, 'param' => $param, 'result' => $result, 'error' => array()) );
             $this->action( 'store.view', $name, $uniq );
-            $result = Data::get($uniq)->result;
+            $result = Data::get( $uniq )->result;
 
             if (isset( $param['exclude'] )) {
                 $arr = explode( ',', $param['exclude'] );
                 foreach ($arr as $item) {
-                    if( isset($result->$item) ){
-                        unset($result->$item);
+                    if (isset( $result->$item )) {
+                        unset( $result->$item );
                     }
                 }
             }

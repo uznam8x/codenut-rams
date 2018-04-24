@@ -24,7 +24,7 @@ class AddonController extends Controller {
             return (object)array('code' => 500, 'message' => $validator->errors());
         }
 
-        $query = DB::table( 'cr_agent' )->where( 'store', $param['store'] );
+        $query = DB::table( 'cr_agent' )->where( 'name', $param['store'] );
         $exist = $query->count();
         if (!$exist) {
             return (object)array('code' => 500, 'message' => $param['store'] . ' is not registered');

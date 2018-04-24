@@ -14,7 +14,7 @@ class CreateAgentTable extends Migration
     public function up() {
         Schema::create('cr_agent', function (Blueprint $table) {
             $table->increments('xid');
-            $table->string('store')->unique();
+            $table->string('name')->unique();
             $table->mediumText('addon');
             $table->timestamps();
         });
